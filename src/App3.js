@@ -131,7 +131,11 @@ const CountryDetail = ({country}) => {
           <li key={key}>{value}</li>
         )}
       </ul>
-      <h1>{country.flag}</h1>
+      <img
+        src={country.flags.png}
+        alt={`Flag of ${country.name.common}`}
+        width={150}
+      />
       <h2>Weather in {country.name.common}</h2>
       {weather && Object.keys(weather).length > 0 && <WeatherDetail weather={weather} />}
 
@@ -141,13 +145,15 @@ const CountryDetail = ({country}) => {
 
 const WeatherDetail = ({weather}) => {
   const [iconURL, setIconURL] = useState('')
-  const icon = weather.weather[0].icon
+  const icon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
   useEffect(() => {
     console.log('gather icon data')
     axios
-      .get(`http://openweathermap.org/img/wn/${icon}@2x.png`, {responseType: 'blob'})
+      .get(`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`, {responseType: 'blob'})
       .then(response => {
         let imgUrl = URL.createObjectURL(response.data)
+        console.log(response.data)
+        console.log(imgUrl)
         setIconURL(imgUrl)
       })
   }, [])
@@ -156,7 +162,9 @@ const WeatherDetail = ({weather}) => {
   return (
     <>
       <p>temperature {weather.main.temp / 10} in Celcius</p>
-      {iconURL && <img src={iconURL}></img>}
+      <div>
+        <img src={icon} alt={`icon for ${weather.weather[0].description}`} />
+      </div>
       <p>wind {weather.wind.speed} m/s</p>
     </>
   )

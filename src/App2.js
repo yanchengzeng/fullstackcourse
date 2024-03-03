@@ -29,6 +29,13 @@ const App = () => {
       })
   }, [])
 
+  const notify = (message, type='info') => {
+    setNotif({ message, type })
+    setTimeout(() => {
+      setNotif(null)
+    }, 3000)
+  }
+
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -48,14 +55,8 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-          setNotif({
-            text: `the person ${rep.name} has been deleted`,
-            type: true
-          })
-          setTimeout(() => {
-            setNotif(null)
-          }, 3000)
-          setPersons(persons.filter(person => person.id !== rep.id))
+            notify(`the person ${rep.name} has been deleted`,'error')
+            setPersons(persons.filter(person => person.id !== rep.id))
         })    
       } else {
 
@@ -67,13 +68,7 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
-          setNotif({
-            text: `Added ${returnedPerson.name}`,
-            type: false
-          })
-          setTimeout(() => {
-            setNotif(null)
-          }, 3000)
+          notify(`Added ${returnedPerson.name}`)
         })
     }
   }
@@ -96,11 +91,9 @@ const App = () => {
 
   const filteredPersons = (searchStr === '') ? persons : persons.filter(person => person.name.includes(searchStr))
 
-
-
   return (
     <>
-      <Notification message={notif} />
+      <Notification notification={notif} />
       <h2>Search</h2>
       <Filter value={searchStr} onChange={handleSearchStrChange} />
       <h2>Phonebook</h2>
@@ -175,24 +168,26 @@ const Person = ({person, del}) => {
   )
 }
 
-const Notification = ({ message }) => {
-  if (message === null) {
+const Notification = ({ notification }) => {
+  if (notification === null) {
     return null
   }
 
-  if (message.type) {
-    return (
-      <div className='error'>
-        {message.text}
-      </div>
-    ) 
-  } else {
-    return (
-      <div className='notif'>
-        {message.text}
-      </div>
-    )
+  const style = {
+    color: notification.type === 'error' ? 'red' : 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
   }
+
+  return (
+    <div style={style}>
+      {notification.message}
+    </div>
+  )
 }
 
 export default App
